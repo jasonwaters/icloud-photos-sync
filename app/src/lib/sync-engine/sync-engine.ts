@@ -156,23 +156,23 @@ export class SyncEngine extends EventEmitter {
     async fetchAndLoadState(): Promise<[Asset[], Album[], PLibraryEntities<Asset>, PLibraryEntities<Album>]> {
         this.emit(SYNC_ENGINE.EVENTS.FETCH_N_LOAD);
 
-      const doAlbums = false;
-      let remoteAssets:Array<Asset> = await this.icloud.photos
-        .fetchAllCPLAssetsMasters()
-        .then(([cplAssets, cplMasters]) =>
-          SyncEngine.convertCPLAssets(cplAssets, cplMasters)
-        );
-      let localAssets:PLibraryEntities<Asset> = await this.photosLibrary.loadAssets();
+        const doAlbums = true;
+        const remoteAssets:Array<Asset> = await this.icloud.photos
+            .fetchAllCPLAssetsMasters()
+            .then(([cplAssets, cplMasters]) =>
+                SyncEngine.convertCPLAssets(cplAssets, cplMasters),
+            );
+        const localAssets:PLibraryEntities<Asset> = await this.photosLibrary.loadAssets();
 
-      let remoteAlbums:Array<Album> = [];
-      let localAlbums: PLibraryEntities<Album> = {};
+        let remoteAlbums:Array<Album> = [];
+        let localAlbums: PLibraryEntities<Album> = {};
 
-      if (doAlbums) {
-        remoteAlbums = await this.icloud.photos
-          .fetchAllCPLAlbums()
-          .then((cplAlbums) => SyncEngine.convertCPLAlbums(cplAlbums));
-        localAlbums = await this.photosLibrary.loadAlbums();
-      }
+        if (doAlbums) {
+            remoteAlbums = await this.icloud.photos
+                .fetchAllCPLAlbums()
+                .then(cplAlbums => SyncEngine.convertCPLAlbums(cplAlbums));
+            localAlbums = await this.photosLibrary.loadAlbums();
+        }
 
         this.emit(SYNC_ENGINE.EVENTS.FETCH_N_LOAD_COMPLETED, remoteAssets.length, remoteAlbums.length, Object.keys(localAssets).length, Object.keys(localAlbums).length);
         return [remoteAssets, remoteAlbums, localAssets, localAlbums];

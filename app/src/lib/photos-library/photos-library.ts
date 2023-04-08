@@ -92,8 +92,8 @@ export class PhotosLibrary extends EventEmitter {
     async loadAssetsForZone(zone: Zones): Promise<PLibraryEntities<Asset>> {
         const libAssets: PLibraryEntities<Asset> = {};
         const zonePath = zone === Zones.Primary ? this.primaryAssetDir : this.sharedAssetDir;
-        const  IGNORED_FILENAMES = ['.DS_Store'];
-        (await fs.promises.readdir(zonePath, { withFileTypes: true }))
+        const IGNORED_FILENAMES = [`.DS_Store`];
+        (await fs.promises.readdir(zonePath, {"withFileTypes": true}))
             .filter(file => file.isFile() && !IGNORED_FILENAMES.includes(file.name))
             .forEach(file => {
                 try {
